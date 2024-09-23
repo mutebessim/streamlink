@@ -1,5 +1,55 @@
 # Changelog
 
+## streamlink 6.10.0 (2024-09-06)
+
+- Added: official support for Python 3.13 ([#6133](https://github.com/streamlink/streamlink/pull/6133))
+- Added: `--logformat` and `--logdateformat` ([#6138](https://github.com/streamlink/streamlink/pull/6138), [#6144](https://github.com/streamlink/streamlink/pull/6144))
+- Added: `--ffmpeg-loglevel` ([#6161](https://github.com/streamlink/streamlink/pull/6161))
+- Fixed: continuous logging errors when stdout stream was closed on the reading end ([#6142](https://github.com/streamlink/streamlink/pull/6142))
+- Fixed: HTTP proxy config being used when getting webbrowser API's websocket IPC address ([#6130](https://github.com/streamlink/streamlink/pull/6130))
+- Updated plugins:
+  - booyah: removed plugin ([#6162](https://github.com/streamlink/streamlink/pull/6162))
+  - douyin: fixed validation schema ([#6140](https://github.com/streamlink/streamlink/pull/6140))
+  - galatasaraytv: removed plugin ([#6163](https://github.com/streamlink/streamlink/pull/6163))
+  - idf1: removed plugin ([#6164](https://github.com/streamlink/streamlink/pull/6164))
+  - linelive: removed plugin ([#6165](https://github.com/streamlink/streamlink/pull/6165))
+  - pandalive: fixed missing HTTP headers ([#6148](https://github.com/streamlink/streamlink/pull/6148))
+  - tiktok: fixed schema of inaccessible streams ([#6160](https://github.com/streamlink/streamlink/pull/6160))
+  - youtube: disabled VODs, as they are currently non-functional ([#6135](https://github.com/streamlink/streamlink/pull/6135))
+- Docs: bumped `sphinx-design >=0.5.0,<=0.6.1`, enabling `sphinx >=8.0.0` ([#6137](https://github.com/streamlink/streamlink/pull/6137))
+- Tests: fixed `pytest-asyncio` warnings ([#6143](https://github.com/streamlink/streamlink/pull/6143))
+
+[Full changelog](https://github.com/streamlink/streamlink/compare/6.9.0...6.10.0)
+
+
+## streamlink 6.9.0 (2024-08-12)
+
+- Added: `streamlink.plugin.api.webbrowser` subpackage with the `aws_waf` module ([#6102](https://github.com/streamlink/streamlink/pull/6102), [#6118](https://github.com/streamlink/streamlink/pull/6118))
+- Added: `max_buffer_size` kwarg to `CDPClient.session()` ([#6101](https://github.com/streamlink/streamlink/pull/6101))
+- Added: webbrowser `User-Agent` header override in headless mode ([#6114](https://github.com/streamlink/streamlink/pull/6114))
+- Changed: default value of `--webbrowser-headless` from `True` to `False` ([#6116](https://github.com/streamlink/streamlink/pull/6116))
+- Changed: unicode characters to be unescaped in JSON output, if possible ([#6080](https://github.com/streamlink/streamlink/pull/6080))
+- Fixed: potential character encoding issues in Streamlink's logger ([#6081](https://github.com/streamlink/streamlink/pull/6081))
+- Updated plugins:
+  - nicolive: updated plugin matcher ([#6127](https://github.com/streamlink/streamlink/pull/6127))
+  - okru: fixed validation schema ([#6085](https://github.com/streamlink/streamlink/pull/6085))
+  - radionet: removed plugin ([#6091](https://github.com/streamlink/streamlink/pull/6091))
+  - sportschau: fixed plugin (HLS streams with packed audio streams remain unsupported) ([#6104](https://github.com/streamlink/streamlink/pull/6104))
+  - tiktok: fixed room ID validation schema ([#6106](https://github.com/streamlink/streamlink/pull/6106))
+  - tvp: added support for sport.tvp.pl ([#6097](https://github.com/streamlink/streamlink/pull/6097))
+  - twitch: added `--twitch-force-client-integrity` ([#6113](https://github.com/streamlink/streamlink/pull/6113))
+  - twitch: fixed broken client-integrity token decoding+parsing ([#6113](https://github.com/streamlink/streamlink/pull/6113))
+  - twitch: removed the `headless=False` override ([#6117](https://github.com/streamlink/streamlink/pull/6117))
+  - vimeo: removed error messages for unsupported DASH streams ([#6128](https://github.com/streamlink/streamlink/pull/6128))
+  - vk: fixed validation schema ([#6096](https://github.com/streamlink/streamlink/pull/6096))
+  - vtvgo: resolved AWS Web Application Firewall bot detection ([#6102](https://github.com/streamlink/streamlink/pull/6102))
+  - yupptv: fixed plugin, added ad filtering ([#6093](https://github.com/streamlink/streamlink/pull/6093))
+- Docs: added webbrowser API metadata to plugin descriptions ([#6115](https://github.com/streamlink/streamlink/pull/6115))
+- Docs: updated build-dependencies and the furo theme ([#6126](https://github.com/streamlink/streamlink/pull/6126))
+
+[Full changelog](https://github.com/streamlink/streamlink/compare/6.8.3...6.9.0)
+
+
 ## streamlink 6.8.3 (2024-07-11)
 
 Patch release:
