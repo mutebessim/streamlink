@@ -20,13 +20,18 @@ from typing import Any
 import streamlink.logger as logger
 from streamlink import NoPluginError, PluginError, StreamError, Streamlink, __version__ as streamlink_version
 from streamlink.exceptions import FatalPluginError, StreamlinkDeprecationWarning
-from streamlink.options import Options
 from streamlink.plugin import Plugin
 from streamlink.stream.stream import Stream, StreamIO
 from streamlink.utils.named_pipe import NamedPipe
 from streamlink.utils.times import LOCAL as LOCALTIMEZONE
-from streamlink_cli.argparser import ArgumentParser, build_parser, setup_session_options
-from streamlink_cli.compat import DeprecatedPath, stdout
+from streamlink_cli.argparser import (
+    ArgumentParser,
+    build_parser,
+    setup_plugin_args,
+    setup_plugin_options,
+    setup_session_options,
+)
+from streamlink_cli.compat import stdout
 from streamlink_cli.console import ConsoleOutput, ConsoleUserInputRequester
 from streamlink_cli.constants import CONFIG_FILES, DEFAULT_STREAM_METADATA, LOG_DIR, PLUGIN_DIRS, STREAM_SYNONYMS
 from streamlink_cli.exceptions import StreamlinkCLIError
@@ -80,7 +85,7 @@ def check_file_output(path: Path, force: bool) -> Path:
     log.debug("Checking file output")
 
     if realpath.is_file() and not force:
-        if sys.stdin.isatty():
+        if sys.stdin and sys.stdin.isatty():
             answer = console.ask(f"File {path} already exists! Overwrite it? [y/N] ")
             if not answer or answer.lower() != "y":
                 raise StreamlinkCLIError()
@@ -387,13 +392,6 @@ def output_stream(stream, formatter: Formatter):
                 args.progress == "force"
                 or args.progress == "yes" and (sys.stderr.isatty() if sys.stderr else False)
             )
-            if args.force_progress:
-                show_progress = True
-                warnings.warn(
-                    "The --force-progress option has been deprecated in favor of --progress=force",
-                    StreamlinkDeprecationWarning,
-                    stacklevel=1,
-                )
             # TODO: finally clean up the global variable mess and refactor the streamlink_cli package
             # noinspection PyUnboundLocalVariable
             stream_runner = StreamRunner(stream_fd, output, show_progress=show_progress)
@@ -583,7 +581,7 @@ def handle_url():
 
     try:
         pluginname, pluginclass, resolved_url = streamlink.resolve_url(args.url)
-        options = setup_plugin_options(pluginname, pluginclass)
+        options = setup_plugin_options(streamlink, args, pluginname, pluginclass)
         plugin = pluginclass(streamlink, resolved_url, options)
         log.info(f"Found matching plugin {pluginname} for URL {args.url}")
 
@@ -684,13 +682,7 @@ def load_plugins(dirs: list[Path], showwarning: bool = True):
     """Attempts to load plugins from a list of directories."""
     for directory in dirs:
         if directory.is_dir():
-            success = streamlink.plugins.load_path(directory)
-            if success and type(directory) is DeprecatedPath:
-                warnings.warn(
-                    f"Loaded plugins from deprecated path, see CLI docs for how to migrate: {directory}",
-                    StreamlinkDeprecationWarning,
-                    stacklevel=1,
-                )
+            streamlink.plugins.load_path(directory)
         elif showwarning:
             log.warning(f"Plugin path {directory} does not exist or is not a directory!")
 
@@ -737,12 +729,6 @@ def setup_config_args(parser, ignore_unknown=False):
     else:
         # Only load first available default config
         for config_file in filter(lambda path: path.is_file(), CONFIG_FILES):  # pragma: no branch
-            if type(config_file) is DeprecatedPath:
-                warnings.warn(
-                    f"Loaded config from deprecated path, see CLI docs for how to migrate: {config_file}",
-                    StreamlinkDeprecationWarning,
-                    stacklevel=1,
-                )
             config_files.append(config_file)
             break
 
@@ -754,12 +740,6 @@ def setup_config_args(parser, ignore_unknown=False):
                 config_file = config_file.with_name(f"{config_file.name}.{pluginname}")
                 if not config_file.is_file():
                     continue
-                if type(config_file) is DeprecatedPath:
-                    warnings.warn(
-                        f"Loaded plugin config from deprecated path, see CLI docs for how to migrate: {config_file}",
-                        StreamlinkDeprecationWarning,
-                        stacklevel=1,
-                    )
                 config_files.append(config_file)
                 break
 
@@ -787,59 +767,6 @@ def setup_streamlink():
     global streamlink
 
     streamlink = Streamlink({"user-input-requester": ConsoleUserInputRequester(console)})
-
-
-def setup_plugin_args(session: Streamlink, parser: ArgumentParser):
-    """Adds plugin argument data to the argument parser."""
-
-    plugin_args = parser.add_argument_group("Plugin options")
-    for pname, arguments in session.plugins.iter_arguments():
-        group = parser.add_argument_group(pname.capitalize(), parent=plugin_args)
-
-        for parg in arguments:
-            group.add_argument(parg.argument_name(pname), **parg.options)
-
-
-def setup_plugin_options(pluginname: str, pluginclass: type[Plugin]) -> Options:
-    """Initializes plugin options from argument values."""
-
-    if not pluginclass.arguments:
-        return Options()
-
-    defaults = {}
-    values = {}
-    required = {}
-
-    for parg in pluginclass.arguments:
-        defaults[parg.dest] = parg.default
-
-        if parg.help == argparse.SUPPRESS:
-            continue
-
-        value = getattr(args, parg.namespace_dest(pluginname))
-        values[parg.dest] = value
-
-        if parg.required:
-            required[parg.name] = parg
-        # if the value is set, check to see if any of the required arguments are not set
-        if parg.required or value:
-            try:
-                for rparg in pluginclass.arguments.requires(parg.name):
-                    required[rparg.name] = rparg
-            except RuntimeError:  # pragma: no cover
-                log.error(f"{pluginname} plugin has a configuration error and the arguments cannot be parsed")
-                break
-
-    for req in required.values():
-        if not values.get(req.dest):
-            prompt = f"{req.prompt or f'Enter {pluginname} {req.name}'}: "
-            value = console.askpass(prompt) if req.sensitive else console.ask(prompt)
-            values[req.dest] = value
-
-    options = Options(defaults)
-    options.update(values)
-
-    return options
 
 
 def log_root_warning():
