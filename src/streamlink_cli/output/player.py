@@ -105,9 +105,7 @@ class PlayerArgsVLC(PlayerArgs):
         return super().get_namedpipe(namedpipe)
 
     def get_title(self, title) -> list[str]:
-        # allow escaping with \$: see https://wiki.videolan.org/Documentation:Format_String/
-        # TODO: remove this feature
-        title = title.replace("$", "$$").replace(r"\$$", "$")
+        title = title.replace("$", "$$")
 
         return ["--input-title-format", title]
 
@@ -234,7 +232,7 @@ class PlayerOutput(Output):
         playerpath = args[0]
         args[0] = which(playerpath)
         if not args[0]:
-            if playerpath[:1] in ("\"", "'"):
+            if playerpath[:1] in ('"', "'"):
                 warnings.warn(
                     "\n".join([
                         "The --player argument has been changed and now only takes player path values:",

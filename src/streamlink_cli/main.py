@@ -391,7 +391,7 @@ def output_stream(stream, formatter: Formatter):
             show_progress = (
                 args.progress == "force"
                 or args.progress == "yes" and (sys.stderr.isatty() if sys.stderr else False)
-            )
+            )  # fmt: skip
             # TODO: finally clean up the global variable mess and refactor the streamlink_cli package
             # noinspection PyUnboundLocalVariable
             stream_runner = StreamRunner(stream_fd, output, show_progress=show_progress)
@@ -468,13 +468,14 @@ def handle_stream(plugin: Plugin, streams: Mapping[str, Stream], stream_name: st
 def fetch_streams(plugin: Plugin) -> Mapping[str, Stream]:
     """Fetches streams using correct parameters."""
 
-    return plugin.streams(stream_types=args.stream_types,
-                          sorting_excludes=args.stream_sorting_excludes)
+    return plugin.streams(
+        stream_types=args.stream_types,
+        sorting_excludes=args.stream_sorting_excludes,
+    )
 
 
 def fetch_streams_with_retry(plugin: Plugin, interval: float, count: int) -> Mapping[str, Stream] | None:
-    """Attempts to fetch streams repeatedly
-       until some are returned or limit hit."""
+    """Attempts to fetch streams repeatedly until some are returned or limit hit."""
 
     try:
         streams = fetch_streams(plugin)
@@ -697,7 +698,8 @@ def setup_args(
     arglist = sys.argv[1:]
 
     # Load arguments from config files
-    configs = [f"@{config_file}" for config_file in config_files or []]
+    prefix = parser.fromfile_prefix_chars or "@"
+    configs = [f"{prefix}{config_file}" for config_file in config_files or []]
 
     args, unknown = parser.parse_known_args(configs + arglist)
     if unknown and not ignore_unknown:
@@ -724,7 +726,7 @@ def setup_config_args(parser, ignore_unknown=False):
             config_file
             for config_file in [Path(path).expanduser() for path in reversed(args.config)]
             if config_file.is_file()
-        )
+        )  # fmt: skip
 
     else:
         # Only load first available default config
@@ -775,8 +777,7 @@ def log_root_warning():
             log.info("streamlink is running as root! Be careful!")
 
 
-def log_current_versions():
-    """Show current installed versions"""
+def log_current_versions() -> None:
     if not logger.root.isEnabledFor(logging.DEBUG):
         return
 
@@ -795,14 +796,17 @@ def log_current_versions():
     log.debug(f"OpenSSL:    {ssl.OPENSSL_VERSION}")
     log.debug(f"Streamlink: {streamlink_version}")
 
+    log.debug("Dependencies:")
     # https://peps.python.org/pep-0508/#names
     re_name = re.compile(r"[A-Z\d](?:[A-Z\d._-]*[A-Z\d])?", re.IGNORECASE)
-    log.debug("Dependencies:")
-    for name in [
-        match.group(0)
-        for match in map(re_name.match, importlib.metadata.requires("streamlink"))
+    dependencies: list[str] = importlib.metadata.requires("streamlink") or []
+    dependency_names: set[str] = {
+        match[0]
+        for match in [re_name.match(item) for item in dependencies]
         if match is not None
-    ]:
+    }  # fmt: skip
+    # noinspection PyTypeChecker
+    for name in sorted(dependency_names, key=str.lower):
         try:
             version = importlib.metadata.version(name)
         except importlib.metadata.PackageNotFoundError:
@@ -828,10 +832,14 @@ def log_current_arguments(session: Streamlink, parser: argparse.ArgumentParser):
         seen.add(action.dest)
         value = getattr(args, action.dest)
         if action.default != value:
-            name = next(  # pragma: no branch
-                (option for option in action.option_strings if option.startswith("--")),
-                action.option_strings[0],
-            ) if action.option_strings else action.dest
+            name = (
+                next(  # pragma: no branch
+                    (option for option in action.option_strings if option.startswith("--")),
+                    action.option_strings[0],
+                )
+                if action.option_strings
+                else action.dest
+            )  # fmt: skip
             log.debug(f" {name}={value if name not in sensitive else '*' * 8}")
 
 
@@ -869,12 +877,12 @@ def setup_logger_and_console(
 
     try:
         streamhandler = logger.basicConfig(
-            stream=stream,
             filename=filename,
-            level=level,
-            style="{",
             format=fmt,
             datefmt=datefmt,
+            style="{",
+            level=level,
+            stream=stream,
             capture_warnings=True,
         )
     except Exception as err:
@@ -938,7 +946,8 @@ def run(parser: ArgumentParser) -> int:
     if args.version_check:
         pass
     elif args.help:
-        parser.print_help()
+        helptext = parser.format_help()
+        console.msg(helptext)
     elif args.plugins:
         print_plugins()
     elif args.can_handle_url or args.can_handle_url_no_redirect:
@@ -947,10 +956,7 @@ def run(parser: ArgumentParser) -> int:
         exit_code = handle_url_wrapper()
     else:
         usage = parser.format_usage()
-        console.msg(
-            f"{usage}\n"
-            + "Use -h/--help to see the available options or read the manual at https://streamlink.github.io",
-        )
+        console.msg(f"{usage}\nUse -h/--help to see the available options or read the manual at https://streamlink.github.io/")
 
     return exit_code
 
