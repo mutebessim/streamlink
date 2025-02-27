@@ -1,5 +1,37 @@
 # Changelog
 
+## streamlink 7.1.3 (2025-02-14)
+
+- Fixed: `validate.contains()` to allow all kinds of `Container` object inputs ([#6421](https://github.com/streamlink/streamlink/pull/6421))
+- Updated plugins:
+  - ceskatelevize: rewritten and fixed plugin ([#6397](https://github.com/streamlink/streamlink/pull/6397))
+  - nos: fixed validation schema, updated matcher ([#6420](https://github.com/streamlink/streamlink/pull/6420))
+  - pandalive: fixed user\_id retieval, updated matcher ([#6433](https://github.com/streamlink/streamlink/pull/6433))
+  - pluzz: fixed video ID schemas ([#6428](https://github.com/streamlink/streamlink/pull/6428))
+  - streamable: removed plugin ([#6435](https://github.com/streamlink/streamlink/pull/6435))
+  - tv4play: removed plugin ([#6399](https://github.com/streamlink/streamlink/pull/6399))
+  - twitch: refactored TwitchAPI class and access token retrieval ([#6403](https://github.com/streamlink/streamlink/pull/6403))
+  - wwenetwork: rewritten and fixed plugin ([#6404](https://github.com/streamlink/streamlink/pull/6404))
+- Docs: replaced Windows and Linux AppImage nightly builds with preview builds triggered on each commit to `master` ([#6425](https://github.com/streamlink/streamlink/pull/6425))
+- Docs: added optional/secondary Linux AppImage builds with FFmpeg being bundled ([#6415](https://github.com/streamlink/streamlink/pull/6415))
+- Tests: bumped `freezegun` requirement to `>=1.5.0` ([#6406](https://github.com/streamlink/streamlink/pull/6406))
+
+[Full changelog](https://github.com/streamlink/streamlink/compare/7.1.2...7.1.3)
+
+
+## streamlink 7.1.2 (2025-01-08)
+
+- Updated plugins:
+  - various: fixed access of URL matcher regex capture groups, affecting abematv, ard\_mediathek, bbiplayer, dailymotion, picarto, streann ([#6364](https://github.com/streamlink/streamlink/pull/6364), [#6368](https://github.com/streamlink/streamlink/pull/6368))
+  - chzzk: added support for clips ([#6389](https://github.com/streamlink/streamlink/pull/6389))
+  - dailymotion: added support for lequipe.fr ([#6372](https://github.com/streamlink/streamlink/pull/6372))
+  - kick: fixed 403 HTTP errors, fixed VOD URL matcher ([#6384](https://github.com/streamlink/streamlink/pull/6384))
+  - nicolive: fixed authentication ([#6378](https://github.com/streamlink/streamlink/pull/6378))
+  - tiktok: rewritten plugin, fixed live streams, added VODs ([#6381](https://github.com/streamlink/streamlink/pull/6381))
+
+[Full changelog](https://github.com/streamlink/streamlink/compare/7.1.1...7.1.2)
+
+
 ## streamlink 7.1.1 (2024-12-28)
 
 - Fixed: `--show-matchers=pluginname` not working when plugins are loaded lazily ([#6361](https://github.com/streamlink/streamlink/pull/6361))

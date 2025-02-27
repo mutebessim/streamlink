@@ -63,7 +63,7 @@ Windows
       - See the `Windows binaries`_ section below
     * - :octicon:`verified` Portable
       - See the `Windows binaries`_ section below
-    * - :octicon:`verified` Nightly builds
+    * - :octicon:`verified` Preview builds
       - See the `Windows binaries`_ section below
     * - :octicon:`verified` Python pip
       - See the `PyPI package and source code`_ section below
@@ -132,7 +132,7 @@ Linux and BSD
       - Installing
     * - :octicon:`verified` AppImage
       - See the `Linux AppImages`_ section below
-    * - :octicon:`verified` AppImage nightly builds
+    * - :octicon:`verified` AppImage preview builds
       - See the `Linux AppImages`_ section below
     * - :octicon:`verified` Python pip
       - See the `PyPI package and source code`_ section below
@@ -302,16 +302,13 @@ PyPI package and source code
 If a package is not available on your platform, or if it's out of date,
 then Streamlink can be installed via `pip`_, the Python package manager.
 
-Before running :command:`pip`, make sure that it's the Python 3 version of `pip`_ (to check, run :command:`pip --version`).
-On some systems, this isn't the case by default and an alternative, like :command:`pip3` for example, needs to be run instead.
-
 .. warning::
 
-    On Linux, when not using a virtual environment, it is recommended to **install custom python packages like this
-    only for the current user** (see the ``--user`` parameter below), since system-wide packages can cause conflicts with
-    the system's regular package manager.
+    On Linux, when not using a `virtual environment`_, it is recommended to **install custom python packages like this
+    only for the current user** using the ``--user`` parameter, since system-wide packages can cause conflicts with
+    the system's regular package manager. Never install Python packages via sudo in your system's global Python environment.
 
-    Those user-packages will be installed into ``~/.local`` instead of ``/usr``, and entry-scripts for
+    User-packages will be installed into ``~/.local`` instead of ``/usr``, and entry-scripts for
     running the programs can be found in ``~/.local/bin``, e.g. ``~/.local/bin/streamlink``.
 
     In order for the command line shell to be able to find these executables, the user's ``PATH`` environment variable
@@ -327,29 +324,33 @@ On some systems, this isn't the case by default and an alternative, like :comman
     * - :octicon:`verified` `Latest release`_
       - .. code-block:: bash
 
-            pip install --user -U streamlink
+            pip install -U streamlink
     * - :octicon:`verified` `Master branch`_
       - .. code-block:: bash
 
-            pip install --user -U git+https://github.com/streamlink/streamlink.git
-    * - :octicon:`unverified` `Specific tag/branch/commit`_
+            pip install -U git+https://github.com/streamlink/streamlink.git
+    * - :octicon:`unverified` `From a pull request <pip-install-vcs_>`_
       - .. code-block:: bash
 
-            pip install --user -U git+https://github.com/USERNAME/streamlink.git@REVISION
+            pip install -U git+https://github.com/streamlink/streamlink.git@refs/pull/PULL-REQUEST-ID/head
+    * - :octicon:`unverified` `Specific tag/branch/commit <pip-install-vcs_>`_
+      - .. code-block:: bash
+
+            pip install -U git+https://github.com/USERNAME/streamlink.git@REVISION
 
 .. _pip: https://pip.pypa.io/en/stable/
 .. _Latest release: https://pypi.python.org/pypi/streamlink
 .. _Master branch: https://github.com/streamlink/streamlink/commits/master
-.. _Specific tag/branch/commit: https://pip.pypa.io/en/stable/reference/pip_install/#git
+.. _pip-install-vcs: https://pip.pypa.io/en/stable/topics/vcs-support/#git
 
 
 Virtual environment
 -------------------
 
-Another way of installing Streamlink in a non-system-wide way is using the `venv`_ or `virtualenv`_ Python packages,
-which both create a user-owned Python environment which is isolated from the system's main Python package environment.
+A better way of installing Streamlink as a non-system Python package is using the `venv`_ or `virtualenv`_ Python modules,
+which both create a user-owned Python environment which is isolated from the system's main Python environment.
 
-While `venv`_ is part of Python's standard library since ``3.3``, `virtualenv`_ is the project which `venv`_ was built from,
+While `venv`_ is part of Python's standard library since ``3.3``, `virtualenv`_ is the project which `venv`_ originated from,
 but it first needs to be installed, either via `pip`_ or from the system's package manager. It also implements more features,
 so depending on your needs, you may want to use `virtualenv`_ instead of `venv`_.
 
@@ -542,21 +543,21 @@ Windows binaries
 
         **Windows stable releases**
         ^^^
-        :fas:`download` GitHub releases page
+        :fas:`download;fa-2x` GitHub releases page
 
-        The most recent Streamlink release
+        :fas:`check-circle;sd-text-success fa-lg` The most recent Streamlink release
 
     .. grid-item-card::
         :padding: 3
-        :link: https://github.com/streamlink/windows-builds/actions?query=event%3Aschedule+is%3Asuccess+branch%3Amaster
-        :link-alt: Windows nightly builds
+        :link: https://github.com/streamlink/windows-builds/actions/workflows/preview-build.yml
+        :link-alt: Windows preview builds
         :text-align: center
 
-        **Windows nightly builds**
+        **Windows preview builds**
         ^^^
-        :fas:`download` GitHub actions build artifacts
+        :fas:`download;fa-2x` GitHub actions build artifacts
 
-        Built once each day at midnight UTC |br| :sub:`GitHub account required`
+        :fab:`github;fa-lg` Account required
 
 **Flavors**
 
@@ -653,21 +654,21 @@ Linux AppImages
 
         **AppImage stable releases**
         ^^^
-        :fas:`download` GitHub releases page
+        :fas:`download;fa-2x` GitHub releases page
 
-        The most recent Streamlink release
+        :fas:`check-circle;sd-text-success fa-lg` The most recent Streamlink release
 
     .. grid-item-card::
         :padding: 3
-        :link: https://github.com/streamlink/streamlink-appimage/actions?query=event%3Aschedule+is%3Asuccess+branch%3Amaster
-        :link-alt: AppImage nightly builds
+        :link: https://github.com/streamlink/streamlink-appimage/actions/workflows/preview-build.yml
+        :link-alt: AppImage preview builds
         :text-align: center
 
-        **AppImage nightly builds**
+        **AppImage preview builds**
         ^^^
-        :fas:`download` GitHub actions build artifacts
+        :fas:`download;fa-2x` GitHub actions build artifacts
 
-        Built once each day at midnight UTC |br| :sub:`GitHub account required`
+        :fab:`github;fa-lg` Account required
 
 **Architectures**
 
@@ -688,7 +689,7 @@ Linux AppImages
 
 **Contents**
 
-.. grid:: 2
+.. grid:: 3
     :padding: 0
     :class-container: grid-with-images
 
@@ -713,6 +714,17 @@ Linux AppImages
             :alt: Streamlink
 
         Streamlink |br| :sub:`and dependencies`
+
+    .. grid-item-card::
+        :padding: 3
+        :link: https://github.com/streamlink/FFmpeg-Builds
+        :link-alt: FFmpeg, required for muxing streams
+        :text-align: center
+
+        .. image:: _static/icon-ffmpeg.svg
+            :alt: FFmpeg
+
+        FFmpeg |br| :sub:`for muxing streams` |br| :sub:`(optional)`
 
 **How-To**
 
