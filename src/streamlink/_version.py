@@ -8,11 +8,11 @@ def _get_version() -> str:
     """
     # ruff: disable[import-outside-top-level, unsorted-imports]
     from pathlib import Path
-    from versioningit import get_version
+    #from versioningit import get_version
     import streamlink
     # ruff: enable[import-outside-top-level, unsorted-imports]
 
     return get_version(project_dir=Path(streamlink.__file__).parents[2])
 
 
-__version__ = _get_version()
+__version__ = "8.6.2"
